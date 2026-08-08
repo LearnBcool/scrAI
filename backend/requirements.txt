@@ -1,0 +1,22 @@
+# Backend Laboratory - required dependencies
+fastapi
+uvicorn[standard]
+python-dotenv
+pydantic-settings
+pydantic
+
+# PostgreSQL driver (psycopg 3)
+psycopg[binary]
+
+# scraAI - project stack
+crawl4ai
+# Pinned: must match the base Docker image mcr.microsoft.com/playwright/python:v1.62.0-noble
+# (browser bundle of the image is version-locked to the playwright Python package).
+# 1.62.0 is the version pip resolves for crawl4ai==0.9.2 (verified against installed metadata).
+playwright==1.62.0
+litellm
+httpx
+duckduckgo-search
+
+# scraAI - optional vector memory / RAG
+chromadb

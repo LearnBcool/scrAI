@@ -1,0 +1,21 @@
+# Dependências e artefatos locais
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+
+# Segredos e ambiente
+.env
+
+# Dados locais (SQLite legado não deve ir para a imagem)
+data/
+
+# VCS e CI
+.git/
+.gitignore
+.github/
+
+# Testes e tooling não são necessários em produção
+tests/
+pytest.ini
