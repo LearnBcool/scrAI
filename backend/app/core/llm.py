@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import logging
+import os
 from typing import Any
 
 import litellm
@@ -32,10 +34,48 @@ def _build_kwargs(
     return kwargs
 
 
+def _log_runtime_config() -> None:
+    """Temporary observability: LLM runtime config without exposing secrets."""
+    api_key = settings.llm_api_key
+    configured = bool(api_key)
+    fingerprint = "none"
+    if configured and isinstance(api_key, str):
+        fingerprint = hashlib.sha256(api_key.encode("utf-8")).hexdigest()[:8]
+
+    env_names = [
+        "LLM_MODEL",
+        "LLM_API_KEY",
+        "LLM_API_BASE",
+        "OPENAI_API_KEY",
+        "OPENAI_API_BASE",
+    ]
+    env_presence = {
+        name: os.environ.get(name) is not None for name in env_names
+    }
+    env_lines = "\n".join(
+        f"  {name}={str(env_presence[name]).lower()}" for name in env_names
+    )
+
+    logger.info(
+        "LLM runtime config:\n"
+        "model=%s\n"
+        "api_base=%s\n"
+        "api_key_configured=%s\n"
+        "api_key_fingerprint=%s\n"
+        "env:\n%s",
+        settings.llm_model,
+        settings.llm_api_base,
+        str(configured).lower(),
+        fingerprint,
+        env_lines,
+    )
+
+
 def _completion_sync(
     messages: list[dict[str, Any]],
     tools: list[dict[str, Any]] | None,
 ) -> Any:
+    _log_runtime_config()
     return litellm.completion(**_build_kwargs(messages, tools))
 
 
