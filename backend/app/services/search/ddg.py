@@ -22,7 +22,12 @@ class DDGSearchProvider:
         last_error: Exception | None = None
         for attempt in range(3):
             try:
-                rows = DDGS().text(keywords=query, max_results=max_results)
+                # backend="html": o backend padrao ("auto") retorna 0 resultados
+                # em muitos ambientes (bloqueio/rate-limit do DDG); o html parser
+                # responde de forma confiavel.
+                rows = DDGS().text(
+                    keywords=query, max_results=max_results, backend="html"
+                )
                 results: list[WebResult] = []
                 for rank, row in enumerate(rows, start=1):
                     url = row.get("href") or row.get("url") or ""
